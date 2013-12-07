@@ -325,9 +325,9 @@ sub _parse_string {
 			);
 		}
 		else {
-			my $hex = sprintf('0x%02x', ord $c);
+			my $hex = sprintf('"\x%02x"', ord $c);
 			return $self->_err(
-				Parser => "Bad character hex($hex) in string at line $$line_ref:\n" .
+				Parser => "Bad character $hex in string at line $$line_ref:\n" .
 							_parser_msg($data_ref, $$offset_ref)
 			);
 		}
@@ -393,6 +393,9 @@ sub _parser_msg {
 		elsif ($c eq "\t") {
 			$c = '  ';
 		}
+		elsif (ord $c < 32) {
+			$c = ' ';
+		}
 		
 		substr($msg, 0, 0) = $c;
 		
@@ -416,6 +419,9 @@ sub _parser_msg {
 		}
 		elsif ($c eq "\t") {
 			$c = '  ';
+		}
+		elsif (ord $c < 32) {
+			$c = ' ';
 		}
 		
 		substr($msg, length $msg) = $c;
