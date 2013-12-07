@@ -48,7 +48,7 @@ sub _parse_space_and_comments {
 	
 	pos($$data_ref) = $$offset_ref;
 	
-	while ($$data_ref =~ /\G(?:(\n+)|\s+|#[^\n]+)/gc) {
+	while ($$data_ref =~ /\G(?:(\n+)|\s|#[^\n]+)/gc) {
 		if (defined $1) {
 			$$line_ref += length $1;
 		}
@@ -121,7 +121,7 @@ sub _parse_eq_sign {
 	
 	unless (substr($$data_ref, $$offset_ref, 1) eq '=') {
 		return $self->_err(
-			Parser => "Expected equals sign at line $$line_ref:\n" . _parser_msg($data_ref, $$offset_ref)
+			Parser => "Expected equals sign `=' at line $$line_ref:\n" . _parser_msg($data_ref, $$offset_ref)
 		);
 	}
 	
@@ -270,7 +270,7 @@ sub _parse_colon_sign {
 	
 	unless (substr($$data_ref, $$offset_ref, 1) eq ':') {
 		return $self->_err(
-			Parser => "Expected colon sign at line $$line_ref:\n" . _parser_msg($data_ref, $$offset_ref)
+			Parser => "Expected colon sign `:' at line $$line_ref:\n" . _parser_msg($data_ref, $$offset_ref)
 		);
 	}
 	
