@@ -438,3 +438,158 @@ sub _parser_msg {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Parse::JCONF - Parse JCONF (JSON optimized for configs)
+
+=head1 SYNOPSIS
+
+    use strict;
+    use Parse::JCONF;
+    
+    my $raw_cfg = do { local $/; <DATA> };
+    my $parser = Parse::JCONF->new(autodie => 1);
+    
+    $cfg = $parser->parse($raw_cfg);
+    
+    $cfg->{modules}{Mo}[1]; # 0.08
+    $cfg->{enabled}; # 1
+    $cfg->{enabled} == Parse::JCONF::Boolean::TRUE; # yes
+    $cfg->{enabled} == 1; # no
+    if ($cfg->{enabled}) { 1 }; # yes
+    $cfg->{data}[0]; # Test data
+    $cfg->{query}; # SELECT * from pkg
+                   # LEFT JOIN ver ON pkg.id=ver.pkg_id
+                   # WHERE pkg.name IN ("Moose", "Mouse", "Moo", "Mo")
+    __DATA__
+    modules = {
+        Moose: 1,
+        Mouse: 0.91,
+        Moo: 0.05, # some comment here about version
+        Mo: [0.01, 0.08],
+    }
+    
+    enabled = true
+    data = ["Test data", "Production data"] # some comment about data
+    
+    query = "SELECT * from pkg
+             LEFT JOIN ver ON pkg.id=ver.pkg_id
+             WHERE pkg.name IN (\"Moose\", \"Mouse\", \"Moo\", \"Mo\")"
+
+=head1 DESCRIPTION
+
+JSON is good, but not very handy for configuration files. JCONF intended to fix this.
+
+It has several differences with JSON format:
+
+=over
+
+=item bareword - the word which matches /^\w+$/
+
+    some_word   # valid
+    some word   # invalid
+    "some_word" # invalid
+
+=item bareword may be used only as object key or root key
+
+=item only bareword may be used as object key (not string)
+
+    {test: 1}   # valid
+    {"test": 1} # invalid
+
+=item JCONF root always consists of 0 or more trines: root key (bareword), equals sign (=), any valid JCONF value (number/string/true/false/null/object/array)
+
+    value1 = [1,2] # root trine: root key (bareword), equals sign (=), any valid JCONF value
+
+=item values in the object/array or root trines may be devided with comma "," (like in JSON) or with new line (or even several)
+
+    val = [1,2,3,4] # with comma
+    
+    val = [         # with new line
+        1
+        2
+        3
+        4
+    ]
+    
+    val = {         # several newlines are ok
+        a: 1
+        
+        b: 2
+    }
+    
+    val = {        # comma and newlines are ok
+        a: 1,
+        b: 2
+    }
+    
+    val = {       # invalid, several commas is not ok
+        a: 1,,b:2
+    }
+
+=item comma separator allowed after last element
+
+    [1,2,3,4,] # ok
+    {a:1,b:2,} # ok
+
+=item new lines, carriage return, tabs are valid symbols in the string
+
+    str = "This is valid multiline
+    JCONF string"
+
+=item # - is start of the comment, all from this symbol to the end of line will be interpreted as comment
+
+    obj = {
+        bool: false # this is comment
+    }
+
+=back
+
+=head1 METHODS
+
+=head2 new
+
+This is parser object constructor. Available parameters are:
+
+=over
+
+=item autodie
+
+throw exception on any error if true, default is false (in this case parser methods will return undef on error
+and error may be found with L</last_error> method)
+
+=back
+
+=head2 parse
+
+Parses string provided as parameter. On success returns reference to hash. On fail returns undef/throws exception
+(according to C<autodie> option in the constructor). Exception will be of type C<Parse::JCONF::Error::Parser>.
+
+=head2 parse_file
+
+Parses content of the file which path provided as parameter. On success returns reference to hash. On fail returns
+undef/throws exception (according to C<autodie> option in the constructor). Exception will be of type
+C<Parse::JCONF::Error::IO> or C<Parse::JCONF::Error::Parser>.
+
+=head2 last_error
+
+Returns error occured for last parse() or parse_file() call. Error will be one of C<Parse::JCONF::Error> subclass or undef
+(if there was no error).
+
+=head1 SEE ALSO
+
+L<Parse::JCONF::Error>, L<Parse::JCONF::Boolean>
+
+=head1 COPYRIGHT
+
+Copyright Oleg G <oleg@cpan.org>.
+
+This library is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
+=cut
