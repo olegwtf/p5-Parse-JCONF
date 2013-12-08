@@ -172,7 +172,7 @@ sub _parse_constant {
 	
 	my $len = length $constant;
 	substr($$data_ref, $$offset_ref, $len) eq $constant && 
-	($len + $$offset_ref == length $$data_ref || substr($$data_ref, $$offset_ref+$len, 1) =~ /\s|,/)
+	($len + $$offset_ref == length $$data_ref || substr($$data_ref, $$offset_ref+$len, 1) =~ /[\s,\]}]/)
 		or return $self->_err(
 			Parser => "Unexpected value, expected `$constant' at line $$line_ref:\n" .
 						_parser_msg($data_ref, $$offset_ref)
