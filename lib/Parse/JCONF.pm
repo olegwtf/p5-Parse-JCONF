@@ -5,6 +5,8 @@ use Carp;
 use Parse::JCONF::Boolean qw(TRUE FALSE);
 use Parse::JCONF::Error;
 
+our $VERSION = '0.01';
+
 sub new {
 	my ($class, %opts) = @_;
 	
