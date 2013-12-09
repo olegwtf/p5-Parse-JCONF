@@ -1,6 +1,6 @@
 dict = {
 	elephant: "слон",
-	furneture: "мебель",
+	"furneture": "мебель",
 	ququmber: "огурец",
 }
 

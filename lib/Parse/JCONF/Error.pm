@@ -3,7 +3,7 @@ package Parse::JCONF::Error;
 use strict;
 use overload '""' => \&to_string;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
 	my ($class, $msg) = @_;

@@ -5,7 +5,7 @@ use Carp;
 use Parse::JCONF::Boolean qw(TRUE FALSE);
 use Parse::JCONF::Error;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub new {
 	my ($class, %opts) = @_;
@@ -79,6 +79,24 @@ sub _parse_bareword {
 	$$offset_ref = pos($$data_ref);
 	
 	1;
+}
+
+sub _parse_bareword_or_string {
+	my ($self, $data_ref, $offset_ref, $line_ref, $rv_ref) = @_;
+	
+	$self->_parse_space_and_comments($data_ref, $offset_ref, $line_ref)
+		or return $self->_err(
+			Parser => "Unexpected end of data, expected bareword or string at line $$line_ref"
+		);
+	
+	pos($$data_ref) = $$offset_ref;
+	
+	if (substr($$data_ref, $$offset_ref, 1) eq '"') {
+		$self->_parse_string($data_ref, $offset_ref, $line_ref, $rv_ref);
+	}
+	else {
+		$self->_parse_bareword($data_ref, $offset_ref, $line_ref, $rv_ref);
+	}
 }
 
 sub _parse_delim {
@@ -244,7 +262,7 @@ sub _parse_object {
 		
 		substr($$data_ref, $$offset_ref, 1) eq '}'
 			and last;
-		$self->_parse_bareword($data_ref, $offset_ref, $line_ref, \my $key)
+		$self->_parse_bareword_or_string($data_ref, $offset_ref, $line_ref, \my $key)
 			or return;
 		$self->_parse_colon_sign($data_ref, $offset_ref, $line_ref)
 			or return;
@@ -460,7 +478,7 @@ Parse::JCONF - Parse JCONF (JSON optimized for configs)
     $cfg = $parser->parse($raw_cfg);
     
     $cfg->{modules}{Mo}[1]; # 0.08
-    $cfg->{enabled}; # 1
+    $cfg->{enabled}; # Parse::JCONF::Boolean::TRUE or "1" in string context
     $cfg->{enabled} == Parse::JCONF::Boolean::TRUE; # yes
     $cfg->{enabled} == 1; # no
     if ($cfg->{enabled}) { 1 }; # yes
@@ -499,10 +517,10 @@ It has several differences with JSON format:
 
 =item bareword may be used only as object key or root key
 
-=item only bareword may be used as object key (not string)
+=item object key may be bareword or string
 
     {test: 1}   # valid
-    {"test": 1} # invalid
+    {"test": 1} # valid
 
 =item JCONF root always consists of 0 or more trines: root key (bareword), equals sign (=), any valid JCONF value (number/string/true/false/null/object/array)
 
@@ -569,14 +587,15 @@ and error may be found with L</last_error> method)
 
 =head2 parse
 
-Parses string provided as parameter. On success returns reference to hash. On fail returns undef/throws exception
-(according to C<autodie> option in the constructor). Exception will be of type C<Parse::JCONF::Error::Parser>.
+Parses string provided as parameter. Expected string encoding is utf8. On success returns reference to hash.
+On fail returns undef/throws exception (according to C<autodie> option in the constructor).
+Exception will be of type C<Parse::JCONF::Error::Parser>.
 
 =head2 parse_file
 
-Parses content of the file which path provided as parameter. On success returns reference to hash. On fail returns
-undef/throws exception (according to C<autodie> option in the constructor). Exception will be of type
-C<Parse::JCONF::Error::IO> or C<Parse::JCONF::Error::Parser>.
+Parses content of the file which path provided as parameter. Expected file content encoding is utf8. On success
+returns reference to hash. On fail returns undef/throws exception (according to C<autodie> option in the constructor).
+Exception will be of type C<Parse::JCONF::Error::IO> or C<Parse::JCONF::Error::Parser>.
 
 =head2 last_error
 
