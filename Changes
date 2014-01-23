@@ -1,3 +1,6 @@
+0.03 Thu Jan 23 23:01:32 NOVT 2014
+      - fix for `"my" variable $val masks earlier declaration in same statement on line 37`
+
 0.02 Mon Dec  9 15:58:31 NOVT 2013
       - string now is valid object key (in additional to bareword);
       - clarify documentation about expected encoding;
