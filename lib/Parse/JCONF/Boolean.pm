@@ -12,7 +12,7 @@ use constant {
 	FALSE => bless(\(my $false = ''), __PACKAGE__)
 };
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use parent 'Exporter';
 our @EXPORT_OK = qw(TRUE FALSE);

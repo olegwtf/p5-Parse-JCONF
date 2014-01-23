@@ -5,7 +5,7 @@ use Carp;
 use Parse::JCONF::Boolean qw(TRUE FALSE);
 use Parse::JCONF::Error;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub new {
 	my ($class, %opts) = @_;
@@ -34,7 +34,7 @@ sub parse {
 			or return;
 		$self->_parse_eq_sign(\$data, \$offset, \$line)
 			or return;
-		my $val = $self->_parse_value(\$data, \$offset, \$line, \my $val)
+		$self->_parse_value(\$data, \$offset, \$line, \my $val)
 			or return;
 		$self->_parse_delim(undef, \$data, \$offset, \$line)
 			or return;
