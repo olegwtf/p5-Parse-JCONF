@@ -5,16 +5,23 @@ use Carp;
 use Parse::JCONF::Boolean qw(TRUE FALSE);
 use Parse::JCONF::Error;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
+our $HashClass = 'Tie::IxHash';
 
 sub new {
 	my ($class, %opts) = @_;
 	
 	my $self = {
-		autodie => delete $opts{autodie}
+		autodie    => delete $opts{autodie},
+		keep_order => delete $opts{keep_order}
 	};
 	
 	%opts and croak 'unrecognized options: ', join(', ', keys %opts);
+	
+	if ($self->{keep_order}) {
+		eval "require $HashClass"
+			or croak "you need to install Tie::IxHash for `keep_order' option";
+	}
 	
 	bless $self, $class;
 }
@@ -25,6 +32,10 @@ sub parse {
 	$self->_err(undef);
 	
 	my %rv;
+	if ($self->{keep_order}) {
+		tie %rv, $HashClass;
+	}
+	
 	my $offset = 0;
 	my $line = 1;
 	my $len = length $data;
@@ -253,6 +264,9 @@ sub _parse_object {
 	
 	$$offset_ref++;
 	my %rv;
+	if ($self->{keep_order}) {
+		tie %rv, $HashClass;
+	}
 	
 	while (1) {
 		$self->_parse_space_and_comments($data_ref, $offset_ref, $line_ref)
@@ -580,8 +594,14 @@ This is parser object constructor. Available parameters are:
 
 =item autodie
 
-throw exception on any error if true, default is false (in this case parser methods will return undef on error
+Throw exception on any error if true, default is false (in this case parser methods will return undef on error
 and error may be found with L</last_error> method)
+
+=item keep_order
+
+Store key/value pairs in the hash which keeps order if true, default is false. This is useful when you need to
+store your configuration back to the file (for example with C<JCONF::Writer>) and want to save same order as it
+was before. You must have $Parse::JCONF::HashClass installed which default value is Tie::IxHash.
 
 =back
 
@@ -604,7 +624,7 @@ Returns error occured for last parse() or parse_file() call. Error will be one o
 
 =head1 SEE ALSO
 
-L<Parse::JCONF::Error>, L<Parse::JCONF::Boolean>
+L<Parse::JCONF::Error>, L<Parse::JCONF::Boolean>, L<JCONF::Writer>
 
 =head1 COPYRIGHT
 
