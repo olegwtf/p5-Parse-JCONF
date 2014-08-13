@@ -20,7 +20,7 @@ sub new {
 	
 	if ($self->{keep_order}) {
 		eval "require $HashClass"
-			or croak "you need to install Tie::IxHash for `keep_order' option";
+			or croak "you need to install $HashClass for `keep_order' option";
 	}
 	
 	bless $self, $class;
