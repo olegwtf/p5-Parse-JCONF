@@ -1,3 +1,6 @@
+0.04 Wed Aug 13 12:30:47 NOVT 2014
+      - keep_order option added
+
 0.03 Thu Jan 23 23:01:32 NOVT 2014
       - fix for `"my" variable $val masks earlier declaration in same statement on line 37`
 
