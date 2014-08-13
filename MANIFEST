@@ -12,10 +12,8 @@ t/04_string.t
 t/05_array.t
 t/06_object.t
 t/07_complex.t
-t/08_bad.t
 t/08_ordered.t
 t/09_bad.t
-t/09_bad_with_exceptions.t
 t/10_bad_with_exceptions.t
 t/files/array.jconf
 t/files/bad_01.jconf
