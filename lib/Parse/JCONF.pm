@@ -61,7 +61,7 @@ sub _parse_space_and_comments {
 	
 	pos($$data_ref) = $$offset_ref;
 	
-	while ($$data_ref =~ /\G(?:(\n+)|\s|#[^\n]+)/gc) {
+	while ($$data_ref =~ /\G(?:(\n+)|\s|#[^\n]*)/gc) {
 		if (defined $1) {
 			$$line_ref += length $1;
 		}
