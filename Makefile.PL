@@ -6,7 +6,7 @@ WriteMakefile(
 	NAME              => 'Parse::JCONF',
 	LICENSE           => 'perl',
 	VERSION_FROM      => 'lib/Parse/JCONF.pm',
-	PREREQ_PM         => { parent => 0 },
+	PREREQ_PM         => { parent => 0, constant => 1.03 },
 	BUILD_REQUIRES    => {
 		'Test::More' => 0.88
 	},
