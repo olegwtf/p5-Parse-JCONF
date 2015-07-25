@@ -1,3 +1,7 @@
+0.05 Sat Jul 25 16:58:13 NOVT 2015
+      - fix bug where symbols after comment sign (#) were not optional (#2)
+      - add constant.pm to PREREQ_PM for old perl
+
 0.04 Wed Aug 13 12:30:47 NOVT 2014
       - keep_order option added
 

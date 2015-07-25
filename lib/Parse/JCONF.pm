@@ -5,7 +5,7 @@ use Carp;
 use Parse::JCONF::Boolean qw(TRUE FALSE);
 use Parse::JCONF::Error;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our $HashClass = 'Tie::IxHash';
 
 sub new {
